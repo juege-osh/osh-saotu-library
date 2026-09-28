@@ -1,0 +1,410 @@
+package main
+
+import (
+	"bytes"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	"image"
+	"image/png"
+	"mime/multipart"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
+	"testing"
+	"time"
+)
+
+func testLibrary(t *testing.T) *server {
+	t.Helper()
+	db, e := sql.Open("sqlite", "file:"+filepath.Join(t.TempDir(), "test.sqlite3"))
+	if e != nil {
+		t.Fatal(e)
+	}
+	db.SetMaxOpenConns(1)
+	t.Cleanup(func() { db.Close() })
+	if e = initAppDB(db); e != nil {
+		t.Fatal(e)
+	}
+	if e = initLibraryDB(db); e != nil {
+		t.Fatal(e)
+	}
+	s := &server{appDB: db, mediaDir: t.TempDir(), founderID: 1, payProvider: "mock"}
+	for id := int64(1); id <= 6; id++ {
+		_, e = db.Exec(`insert into users(id,username,email,password_hash,created_at,updated_at) values(?,?,?,'shared-account',?,?)`, id, fmt.Sprintf("user%d", id), fmt.Sprintf("u%d@example.invalid", id), appNow(), appNow())
+		if e != nil {
+			t.Fatal(e)
+		}
+		if e = s.ensureLibraryAccount(id); e != nil {
+			t.Fatal(e)
+		}
+	}
+	return s
+}
+func user(id int64) *currentUser {
+	return &currentUser{ID: id, Level: 1, Username: fmt.Sprintf("user%d", id), Email: fmt.Sprintf("u%d@example.invalid", id)}
+}
+func call(s *server, id int64, h func(http.ResponseWriter, *http.Request, *currentUser), path, body string) *httptest.ResponseRecorder {
+	r := httptest.NewRequest("POST", path, strings.NewReader(body))
+	r.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	h(w, r, user(id))
+	return w
+}
+func seedImage(t *testing.T, s *server, owner int64, status string) int64 {
+	t.Helper()
+	res, e := s.appDB.Exec(`insert into library_images(user_id,title,tags,keywords,scene,description,source,category,sha256,filename,preview,width,height,bytes,status,created_at) values(?,'周一摸鱼','猫猫 打工人','上班 office','群聊 接梗','疲惫的星期一','原创','搞图',?,?,?,100,100,3,?,?)`, owner, fmt.Sprintf("hash-%d-%d", owner, time.Now().UnixNano()), "test.png", "preview.jpg", status, appNow())
+	if e != nil {
+		t.Fatal(e)
+	}
+	id, _ := res.LastInsertId()
+	_, e = s.appDB.Exec(`insert into library_fts(rowid,title,tags,keywords,scene,description) values(?,'周一摸鱼','猫猫 打工人','上班 office','群聊 接梗','疲惫的星期一')`, id)
+	if e != nil {
+		t.Fatal(e)
+	}
+	os.WriteFile(filepath.Join(s.mediaDir, "test.png"), []byte("img"), 0600)
+	return id
+}
+func TestQuotaAtomicAndPersistent(t *testing.T) {
+	s := testLibrary(t)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	success := 0
+	for n := 0; n < 20; n++ {
+		wg.Add(1)
+		go func(n int) {
+			defer wg.Done()
+			tx, e := s.appDB.Begin()
+			if e != nil {
+				return
+			}
+			defer tx.Rollback()
+			if e = consumeQuota(tx, 2, "download", fmt.Sprint(n)); e == nil {
+				if tx.Commit() == nil {
+					mu.Lock()
+					success++
+					mu.Unlock()
+				}
+			}
+		}(n)
+	}
+	wg.Wait()
+	if success != 1 {
+		t.Fatalf("overspent daily quota: %d", success)
+	}
+	tx, _ := s.appDB.Begin()
+	if e := reward(tx, 2, "download", 10, "approved:1"); e != nil {
+		t.Fatal(e)
+	}
+	reward(tx, 2, "download", 10, "approved:1")
+	tx.Commit()
+	if s.quota(2)["download"].(int) != 10 {
+		t.Fatal("duplicate reward")
+	}
+	s.appDB.Exec(`update library_daily set day='2000-01-01' where user_id=2`)
+	if s.quota(2)["download"].(int) != 11 {
+		t.Fatal("daily reset lost bonus")
+	}
+}
+func TestConsensusRewardsAndSelfReview(t *testing.T) {
+	s := testLibrary(t)
+	id := seedImage(t, s, 2, "pending")
+	body := fmt.Sprintf(`{"imageId":%d,"decision":"approved","reason":""}`, id)
+	if call(s, 2, s.reviewImage, "/reviews", body).Code != 403 {
+		t.Fatal("self review")
+	}
+	for _, v := range []int64{3, 4} {
+		if w := call(s, v, s.reviewImage, "/reviews", body); w.Code != 200 {
+			t.Fatal(w.Body.String())
+		}
+	}
+	if s.quota(2)["download"].(int) != 1 {
+		t.Fatal("premature reward")
+	}
+	if call(s, 3, s.reviewImage, "/reviews", body).Code != 409 {
+		t.Fatal("duplicate review")
+	}
+	if w := call(s, 5, s.reviewImage, "/reviews", body); w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	if s.quota(2)["download"].(int) != 11 || s.quota(2)["search"].(int) != 2 {
+		t.Fatal("upload rewards")
+	}
+	for _, v := range []int64{3, 4, 5} {
+		q := s.quota(v)
+		if q["reviewCount"].(int) != 1 || q["download"].(int) != 2 || q["upload"].(int) != 2 {
+			t.Fatal(q)
+		}
+	}
+	if call(s, 6, s.reviewImage, "/reviews", body).Code != 409 {
+		t.Fatal("finalized image reviewed again")
+	}
+}
+func TestAdminDoubleAndApplications(t *testing.T) {
+	s := testLibrary(t)
+	s.appDB.Exec(`update library_accounts set role='admin' where user_id=3`)
+	id := seedImage(t, s, 2, "pending")
+	w := call(s, 3, s.reviewImage, "/reviews", fmt.Sprintf(`{"imageId":%d,"decision":"approved"}`, id))
+	if w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	q := s.quota(3)
+	if q["download"].(int) != 3 || q["upload"].(int) != 3 {
+		t.Fatal(q)
+	}
+	if call(s, 4, s.applyAdmin, "/apply", `{"reason":"愿意帮忙"}`).Code != 403 {
+		t.Fatal("ineligible application")
+	}
+	s.appDB.Exec(`update library_accounts set review_count=10 where user_id=4`)
+	if w = call(s, 4, s.applyAdmin, "/apply", `{"reason":"愿意帮忙"}`); w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	if call(s, 4, s.applyAdmin, "/apply", `{"reason":"重复"}`).Code != 409 {
+		t.Fatal("duplicate application")
+	}
+	r := httptest.NewRequest("POST", "/applications/1", strings.NewReader(`{"approve":true}`))
+	r.SetPathValue("id", "1")
+	wr := httptest.NewRecorder()
+	s.decideApplication(wr, r, user(3))
+	if wr.Code != 403 {
+		t.Fatal("admin authorized another admin")
+	}
+	wr = httptest.NewRecorder()
+	r = httptest.NewRequest("POST", "/applications/1", strings.NewReader(`{"approve":true}`))
+	r.SetPathValue("id", "1")
+	s.decideApplication(wr, r, user(1))
+	if wr.Code != 200 || s.libraryRole(4) != "admin" {
+		t.Fatal(wr.Body.String())
+	}
+}
+func TestRejectionRewardsOnlyMatchingVotes(t *testing.T) {
+	s := testLibrary(t)
+	id := seedImage(t, s, 2, "pending")
+	call(s, 3, s.reviewImage, "/", fmt.Sprintf(`{"imageId":%d,"decision":"approved"}`, id))
+	for _, v := range []int64{4, 5} {
+		w := call(s, v, s.reviewImage, "/", fmt.Sprintf(`{"imageId":%d,"decision":"rejected","reason":"来源不明"}`, id))
+		if w.Code != 200 {
+			t.Fatal(w.Body.String())
+		}
+	}
+	if s.quota(2)["download"].(int) != 1 || s.quota(3)["reviewCount"].(int) != 0 || s.quota(4)["reviewCount"].(int) != 1 {
+		t.Fatal("wrong reject reward")
+	}
+}
+func TestSearchChineseAndPagination(t *testing.T) {
+	s := testLibrary(t)
+	seedImage(t, s, 2, "approved")
+	for _, q := range []string{"摸鱼", "打工人", "office", "上班 摸鱼"} {
+		where, args := searchWhere(q, "")
+		items, _, e := s.imageList(where, args, 1)
+		if e != nil || len(items) != 1 {
+			t.Fatalf("search %s: %v %d", q, e, len(items))
+		}
+	}
+	w := call(s, 3, s.searchImages, "/search", `{"query":"摸鱼","category":"搞图"}`)
+	if w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	if call(s, 3, s.searchImages, "/search", `{"query":"猫猫"}`).Code != 429 {
+		t.Fatal("search limit")
+	}
+	r := httptest.NewRequest("GET", "/api/library/images?q=摸鱼", nil)
+	wr := httptest.NewRecorder()
+	s.browseImages(wr, r)
+	if wr.Code != 400 {
+		t.Fatal("search bypass")
+	}
+	if s.quota(3)["search"].(int) != 0 {
+		t.Fatal("wrong search quota")
+	}
+}
+func TestDownloadOwnershipRetriesAndModeration(t *testing.T) {
+	s := testLibrary(t)
+	id := seedImage(t, s, 2, "approved")
+	download := func(uid int64) *httptest.ResponseRecorder {
+		r := httptest.NewRequest("POST", "/downloads", nil)
+		r.SetPathValue("id", fmt.Sprint(id))
+		w := httptest.NewRecorder()
+		s.downloadImage(w, r, user(uid))
+		return w
+	}
+	w := download(3)
+	if w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	var d map[string]any
+	json.Unmarshal(w.Body.Bytes(), &d)
+	url := d["url"].(string)
+	w = download(3)
+	if w.Code != 200 || s.quota(3)["download"].(int) != 0 {
+		t.Fatal("retry charged twice")
+	}
+	r := httptest.NewRequest("GET", url, nil)
+	r.SetPathValue("id", fmt.Sprint(id))
+	wr := httptest.NewRecorder()
+	s.downloadTicket(wr, r, user(4))
+	if wr.Code != 403 {
+		t.Fatal("stolen download receipt")
+	}
+	wr = httptest.NewRecorder()
+	s.downloadTicket(wr, r, user(3))
+	if wr.Code != 200 {
+		t.Fatal(wr.Body.String())
+	}
+	s.appDB.Exec(`update library_images set status='hidden' where id=?`, id)
+	wr = httptest.NewRecorder()
+	s.downloadTicket(wr, r, user(3))
+	if wr.Code != 403 {
+		t.Fatal("hidden image downloadable")
+	}
+}
+func TestUploadValidationDuplicateAndQuota(t *testing.T) {
+	s := testLibrary(t)
+	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
+	var data bytes.Buffer
+	png.Encode(&data, img)
+	send := func(uid int64, payload []byte) *httptest.ResponseRecorder {
+		var body bytes.Buffer
+		m := multipart.NewWriter(&body)
+		for k, v := range map[string]string{"title": "猫猫", "category": "搞图", "source": "原创", "rights": "yes"} {
+			m.WriteField(k, v)
+		}
+		f, _ := m.CreateFormFile("image", "cat.png")
+		f.Write(payload)
+		m.Close()
+		r := httptest.NewRequest("POST", "/uploads", &body)
+		r.Header.Set("Content-Type", m.FormDataContentType())
+		w := httptest.NewRecorder()
+		s.uploadImage(w, r, user(uid))
+		return w
+	}
+	if send(2, []byte("not an image")).Code != 400 {
+		t.Fatal("invalid image accepted")
+	}
+	if w := send(2, data.Bytes()); w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	if send(3, data.Bytes()).Code != 409 {
+		t.Fatal("duplicate accepted")
+	}
+	if s.quota(3)["upload"].(int) != 1 {
+		t.Fatal("duplicate charged")
+	}
+	var n int
+	s.appDB.QueryRow(`select count(*) from library_images where status='pending'`).Scan(&n)
+	if n != 1 {
+		t.Fatal(n)
+	}
+	if s.quota(2)["download"].(int) != 1 {
+		t.Fatal("unapproved upload rewarded")
+	}
+}
+func TestPremiumExpiryAndPrices(t *testing.T) {
+	s := testLibrary(t)
+	plans, e := s.loadMemberPlans()
+	if e != nil || len(plans) != 3 {
+		t.Fatal(e, plans)
+	}
+	for _, p := range plans {
+		want := map[string]int{"saotu_month": 100, "saotu_year": 800, "saotu_lifetime": 1800}[p.PlanCode]
+		if p.PriceCents != want {
+			t.Fatal(p)
+		}
+	}
+	tx, _ := s.appDB.Begin()
+	_, e = s.grantMembershipEntitlementTx(tx, 2, "saotu_month", "test", "membership:test")
+	if e != nil {
+		t.Fatal(e)
+	}
+	tx.Commit()
+	for n := 0; n < 5; n++ {
+		tx, _ = s.appDB.Begin()
+		if e = consumeQuota(tx, 2, "search", fmt.Sprint(n)); e != nil {
+			t.Fatal(e)
+		}
+		tx.Commit()
+	}
+	if s.quota(2)["search"].(int) != 1 {
+		t.Fatal("premium spent quota")
+	}
+	s.appDB.Exec(`update user_memberships set expire_at=? where user_id=2`, appTime(time.Now().Add(-time.Hour)))
+	if s.libraryPremium(2) {
+		t.Fatal("expired premium")
+	}
+	if s.libraryPremium(3) {
+		t.Fatal("free user premium")
+	}
+}
+
+func TestPaymentsSettlementAndOwnership(t *testing.T) {
+	for _, c := range []struct {
+		code   string
+		amount int64
+	}{{"saotu_month", 100}, {"saotu_year", 800}, {"saotu_lifetime", 1800}} {
+		t.Run(c.code, func(t *testing.T) {
+			s, u := testLibrary(t), user(1)
+			w := call(s, u.ID, s.libraryPayment, "/api/library/payments", fmt.Sprintf(`{"planCode":%q}`, c.code))
+			if w.Code != 200 {
+				t.Fatal(w.Body.String())
+			}
+			var out struct {
+				Order paymentOrderVO `json:"order"`
+			}
+			if e := json.Unmarshal(w.Body.Bytes(), &out); e != nil {
+				t.Fatal(e)
+			}
+			if out.Order.AmountCents != c.amount {
+				t.Fatal("wrong price")
+			}
+			if _, e := s.loadPaymentOrder(999, out.Order.OrderNo); e == nil {
+				t.Fatal("other user order accessible")
+			}
+			if _, e := s.settlePayment(out.Order.PaymentNo, "mock", "trade", c.amount-1, "alipay", "{}", "wrong", true); e == nil {
+				t.Fatal("wrong amount accepted")
+			}
+			for i := 0; i < 2; i++ {
+				if _, e := s.settlePayment(out.Order.PaymentNo, "mock", "trade", c.amount, "alipay", "{}", "good", true); e != nil {
+					t.Fatal(e)
+				}
+			}
+			var count int
+			s.appDB.QueryRow(`select count(*) from user_memberships where user_id=1`).Scan(&count)
+			if count != 1 {
+				t.Fatal("duplicate entitlement", count)
+			}
+			if !s.loadMemberStatus(u.ID).Active {
+				t.Fatal("membership missing")
+			}
+		})
+	}
+}
+func TestAuthBridgeCrossOriginAndPrivateMedia(t *testing.T) {
+	s, u := testLibrary(t), user(1)
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		c, e := r.Cookie(sessionCookieName)
+		if e != nil || c.Value != "fixture" {
+			w.WriteHeader(401)
+			return
+		}
+		json.NewEncoder(w).Encode(map[string]any{"authenticated": true, "user": u})
+	}))
+	defer upstream.Close()
+	s.authBridge = upstream.URL
+	r := httptest.NewRequest("GET", "/api/library/bootstrap", nil)
+	r.AddCookie(&http.Cookie{Name: sessionCookieName, Value: "fixture"})
+	w := httptest.NewRecorder()
+	s.routes().ServeHTTP(w, r)
+	if w.Code != 200 || !strings.Contains(w.Body.String(), "user1") {
+		t.Fatal(w.Body.String())
+	}
+	r = httptest.NewRequest("POST", "/api/auth/login", strings.NewReader(`{}`))
+	r.Header.Set("Origin", "https://attacker.invalid")
+	w = httptest.NewRecorder()
+	s.routes().ServeHTTP(w, r)
+	if w.Code != 403 {
+		t.Fatal("cross origin allowed")
+	}
+}

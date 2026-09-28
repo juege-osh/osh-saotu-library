@@ -1,0 +1,11 @@
+._*
+.DS_Store
+*.sqlite3*
+*.env
+.env*
+media/
+/saotu-osh*
+qa/
+*.zip
+*.pem
+*.key
