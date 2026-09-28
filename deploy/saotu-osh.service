@@ -1,0 +1,21 @@
+[Unit]
+Description=OSH daily meme library
+After=network.target prompt-osh.service
+[Service]
+User=nobody
+Group=nobody
+WorkingDirectory=/opt/saotu-osh/app
+EnvironmentFile=-/etc/prompt-osh/smtp.env
+EnvironmentFile=-/etc/prompt-osh/huifu.env
+EnvironmentFile=/etc/saotu-osh/app.env
+ExecStart=/opt/saotu-osh/app/saotu-osh-linux --port 18887 --app-db /var/lib/saotu-osh/saotu.sqlite3 --media-dir /var/lib/saotu-osh/media
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/saotu-osh
+UMask=0077
+[Install]
+WantedBy=multi-user.target
