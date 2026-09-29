@@ -339,9 +339,25 @@ func (s *server) quotaLedger(w http.ResponseWriter, r *http.Request, u *currentU
 		var kind, source, at string
 		var amount int
 		rows.Scan(&kind, &amount, &source, &at)
-		items = append(items, map[string]any{"kind": kind, "amount": amount, "source": source, "createdAt": at})
+		items = append(items, map[string]any{"kind": kind, "amount": amount, "source": source, "label": ledgerLabel(source), "createdAt": at})
 	}
 	jsonResponse(w, map[string]any{"items": items})
+}
+func ledgerLabel(source string) string {
+	switch {
+	case strings.HasPrefix(source, "search:"):
+		return "找图查询"
+	case strings.HasPrefix(source, "download:"):
+		return "下载原图"
+	case strings.HasPrefix(source, "upload:"):
+		return "提交图片"
+	case strings.HasPrefix(source, "approved:"):
+		return "投稿通过审核"
+	case strings.HasPrefix(source, "review:"):
+		return "有效审核奖励"
+	default:
+		return "额度调整"
+	}
 }
 func (s *server) libraryPayment(w http.ResponseWriter, r *http.Request, u *currentUser) {
 	var in struct {
