@@ -64,5 +64,16 @@
     "height": 1254,
     "bytes": 1593431,
     "sha256": "7d2350f28542fe88b9eac9633d33eb883425a92773999a8ce0895f91c499d51d"
+  },
+  {
+    "file": "seed-media/seed-16.png",
+    "purpose": "图库原创吊图：防晒准备过头了",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc2fbb-55fc-83ec-b8e6-20801855c586",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 2281006,
+    "sha256": "cf634d4b4e12e8946cb16d81cc2c4f19d89eebc1c2c7b52df69d7aaca525112f"
   }
 ]
