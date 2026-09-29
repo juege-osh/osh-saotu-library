@@ -152,5 +152,38 @@
     "height": 1024,
     "bytes": 2577361,
     "sha256": "3cf0f5e763ef7294811033d8ae05711e27f6d0966d376f857a1e485da935f842"
+  },
+  {
+    "file": "seed-media/seed-24.png",
+    "purpose": "图库原创搞图：跑一圈，减的全是料",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A90dc396d-f0ad-4977-b153-f0ca11a6ec12",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2383528,
+    "sha256": "452dd8613e3f2c72a5df4aaf498d269db729c56eb33e5e583ff4fd881b2bb36e"
+  },
+  {
+    "file": "seed-media/seed-25.png",
+    "purpose": "图库原创骚图：另一只袜子去哪儿了",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A7ed6bbb7-2b54-4ffa-92ca-404a4c0120f8",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2368311,
+    "sha256": "97a95a891dc724b4a0e40ff03eb477e43979aacda425fc44289530210541178e"
+  },
+  {
+    "file": "seed-media/seed-26.png",
+    "purpose": "图库原创吊图：今天书包背我上学",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A878eebe7-ac96-46dc-ba89-6ccb69562a4e",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2006158,
+    "sha256": "877e0190fbc6bcd4e1eb5d6bbef10112b4e12d7f96d26995cf08eb2207c8b972"
   }
 ]

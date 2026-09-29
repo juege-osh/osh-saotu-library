@@ -22,3 +22,5 @@
 .detail-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 16px}.detail-nav span{font-size:12px;color:var(--muted);white-space:nowrap}
 
 .search-error{margin:9px 2px 0;color:#9a2831;background:#fff3f4;border:1px solid #f0c7cc;border-radius:5px;padding:10px 12px;font-size:12px}
+
+#galleryHeading,#gallery{scroll-margin-top:94px}
