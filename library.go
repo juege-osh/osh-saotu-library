@@ -283,7 +283,7 @@ func (s *server) searchImages(w http.ResponseWriter, r *http.Request, u *current
 		return
 	}
 	in.Query = strings.TrimSpace(in.Query)
-	if len([]rune(in.Query)) > 80 || len(strings.Fields(in.Query)) > 12 || !validCategory(in.Category, true) || (in.Query == "" && in.Category == "") {
+	if len([]rune(in.Query)) > 80 || len(strings.Fields(in.Query)) > 12 || !validCategory(in.Category, true) || (in.Query == "" && in.Category == "") || (in.Query != "" && !strings.ContainsFunc(in.Query, func(r rune) bool { return unicode.IsLetter(r) || unicode.IsNumber(r) })) {
 		apiError(w, 400, "请输入关键词或选择分类，关键词最多 80 字")
 		return
 	}

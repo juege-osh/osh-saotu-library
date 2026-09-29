@@ -48,9 +48,21 @@ func seedInitialLibrary(db *sql.DB, mediaDir string) error {
 }
 
 func seedOneImage(db *sql.DB, mediaDir string, item seedEntry) error {
+	var replaceID int64
+	var previousHash string
+	err := db.QueryRow(`select id,sha256 from library_images where user_id=-1 and title=? limit 1`, item.Title).Scan(&replaceID, &previousHash)
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+	if err == nil && previousHash == item.SHA256 {
+		return nil
+	}
 	var exists int
 	if err := db.QueryRow(`select count(*) from library_images where sha256=?`, item.SHA256).Scan(&exists); err != nil || exists > 0 {
-		return err
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("素材校验值已被其他图片使用")
 	}
 	if item.File == "" || filepath.Base(item.File) != item.File || !validCategory(item.Category, false) || item.License != "CC0" && item.License != "Public domain" && item.License != "本站原创" {
 		return fmt.Errorf("素材清单无效")
@@ -113,6 +125,18 @@ func seedOneImage(db *sql.DB, mediaDir string, item seedEntry) error {
 	}
 	defer tx.Rollback()
 	desc := strings.TrimSpace(item.Description + " 授权：" + item.License + "；原作者：" + item.Author + "。")
+	if replaceID > 0 {
+		if _, err = tx.Exec(`update library_images set tags=?,keywords=?,scene=?,description=?,source=?,category=?,sha256=?,filename=?,preview=?,width=?,height=?,bytes=?,reviewed_at=? where id=? and user_id=-1`, item.Tags, item.Keywords, item.Scene, desc, item.Source, item.Category, hash, filename, previewName, w, h, len(data), appNow(), replaceID); err != nil {
+			return err
+		}
+		if _, err = tx.Exec(`delete from library_fts where rowid=?`, replaceID); err != nil {
+			return err
+		}
+		if _, err = tx.Exec(`insert into library_fts(rowid,title,tags,keywords,scene,description) values(?,?,?,?,?,?)`, replaceID, item.Title, item.Tags, item.Keywords, item.Scene, desc); err != nil {
+			return err
+		}
+		return tx.Commit()
+	}
 	result, err := tx.Exec(`insert into library_images(user_id,title,tags,keywords,scene,description,source,category,sha256,filename,preview,width,height,bytes,status,created_at,reviewed_at) values(-1,?,?,?,?,?,?,?,?,?,?,?,?,?,'approved',?,?)`, item.Title, item.Tags, item.Keywords, item.Scene, desc, item.Source, item.Category, hash, filename, previewName, w, h, len(data), appNow(), appNow())
 	if err != nil {
 		return err

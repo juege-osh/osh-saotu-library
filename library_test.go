@@ -109,6 +109,17 @@ func TestFavoritesArePrivateAndHideWithImage(t *testing.T) {
 		t.Fatal(w.Body.String())
 	}
 }
+func TestPunctuationOnlySearchDoesNotSpendQuota(t *testing.T) {
+	s := testLibrary(t)
+	seedImage(t, s, 2, "approved")
+	w := call(s, 3, s.searchImages, "/api/library/search", `{"query":"？！...","category":""}`)
+	if w.Code != http.StatusBadRequest {
+		t.Fatal("punctuation-only query accepted", w.Code, w.Body.String())
+	}
+	if got := s.quota(3)["search"]; got != 1 {
+		t.Fatal("invalid query spent search quota", got)
+	}
+}
 func TestQuotaAtomicAndPersistent(t *testing.T) {
 	s := testLibrary(t)
 	var wg sync.WaitGroup
@@ -471,6 +482,25 @@ func TestInitialSeedProvenanceAndIdempotence(t *testing.T) {
 	var jokes []map[string]any
 	if w.Code != 200 || json.Unmarshal(w.Body.Bytes(), &jokes) != nil || len(jokes) < 20 {
 		t.Fatalf("jokes endpoint: code=%d count=%d", w.Code, len(jokes))
+	}
+	var originalID int64
+	var originalHash string
+	if err := s.appDB.QueryRow(`select id,sha256 from library_images where title='谁也别说谁'`).Scan(&originalID, &originalHash); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.appDB.Exec(`update library_images set sha256='outdated-seed' where id=?`, originalID); err != nil {
+		t.Fatal(err)
+	}
+	if err := seedInitialLibrary(s.appDB, s.mediaDir); err != nil {
+		t.Fatal("updated starter image", err)
+	}
+	var id int64
+	var hash string
+	if err := s.appDB.QueryRow(`select id,sha256 from library_images where title='谁也别说谁'`).Scan(&id, &hash); err != nil || id != originalID || hash != originalHash {
+		t.Fatalf("starter image was duplicated or not repaired: id=%d hash=%s err=%v", id, hash, err)
+	}
+	if err := s.appDB.QueryRow(`select count(*) from library_images`).Scan(&count); err != nil || count != 11 {
+		t.Fatalf("starter image count after repair: %d, %v", count, err)
 	}
 }
 func TestSharePreviewOnlyForApprovedImage(t *testing.T) {
