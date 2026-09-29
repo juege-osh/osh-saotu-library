@@ -68,6 +68,47 @@ func seedImage(t *testing.T, s *server, owner int64, status string) int64 {
 	os.WriteFile(filepath.Join(s.mediaDir, "test.png"), []byte("img"), 0600)
 	return id
 }
+func TestFavoritesArePrivateAndHideWithImage(t *testing.T) {
+	s := testLibrary(t)
+	approved := seedImage(t, s, 2, "approved")
+	pending := seedImage(t, s, 2, "pending")
+	request := func(method, path string, id int64, h func(http.ResponseWriter, *http.Request, *currentUser)) *httptest.ResponseRecorder {
+		r := httptest.NewRequest(method, path, nil)
+		r.SetPathValue("id", path[strings.LastIndex(path, "/")+1:])
+		w := httptest.NewRecorder()
+		h(w, r, user(id))
+		return w
+	}
+	if w := request("PUT", fmt.Sprintf("/api/library/favorites/%d", pending), 3, s.addFavorite); w.Code != 404 {
+		t.Fatal("pending image saved", w.Body.String())
+	}
+	path := fmt.Sprintf("/api/library/favorites/%d", approved)
+	for n := 0; n < 2; n++ {
+		if w := request("PUT", path, 3, s.addFavorite); w.Code != 200 {
+			t.Fatal(w.Body.String())
+		}
+	}
+	list := request("GET", "/api/library/favorites", 3, s.listFavorites)
+	var result struct {
+		IDs   []int64 `json:"ids"`
+		Total int     `json:"total"`
+	}
+	if err := json.Unmarshal(list.Body.Bytes(), &result); err != nil || result.Total != 1 || len(result.IDs) != 1 || result.IDs[0] != approved {
+		t.Fatal(list.Body.String(), err)
+	}
+	other := request("GET", "/api/library/favorites", 4, s.listFavorites)
+	if !strings.Contains(other.Body.String(), `"total":0`) {
+		t.Fatal("favorite leaked to another user", other.Body.String())
+	}
+	s.appDB.Exec(`update library_images set status='hidden' where id=?`, approved)
+	hidden := request("GET", "/api/library/favorites", 3, s.listFavorites)
+	if !strings.Contains(hidden.Body.String(), `"total":0`) {
+		t.Fatal("hidden image remained in favorites", hidden.Body.String())
+	}
+	if w := request("DELETE", path, 3, s.removeFavorite); w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+}
 func TestQuotaAtomicAndPersistent(t *testing.T) {
 	s := testLibrary(t)
 	var wg sync.WaitGroup

@@ -27,6 +27,8 @@ func initLibraryDB(db *sql.DB) error {
 		`create table if not exists library_admin_applications(id integer primary key autoincrement,user_id integer not null,reason text not null,status text not null default 'pending',decision_reason text not null default '',created_at text not null,decided_at text,decided_by integer)`,
 		`create table if not exists library_reports(id integer primary key autoincrement,image_id integer not null references library_images(id),user_id integer not null references users(id),reason text not null,status text not null default 'pending',created_at text not null,decided_at text,decided_by integer,unique(image_id,user_id))`,
 		`create index if not exists library_reports_pending on library_reports(status,id)`,
+		`create table if not exists library_favorites(user_id integer not null references users(id),image_id integer not null references library_images(id),created_at text not null,primary key(user_id,image_id))`,
+		`create index if not exists library_favorites_image on library_favorites(image_id)`,
 		`create unique index if not exists library_application_pending on library_admin_applications(user_id) where status='pending'`,
 		`update member_plans set status=0 where plan_code not like 'saotu_%'`, `update point_packages set status=0`,
 	} {
