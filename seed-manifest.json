@@ -270,5 +270,22 @@
     "sourceVariant": "original",
     "bytes": 2206074,
     "sha256": "4197508fb6c3e831b5378292ca64ae1c5d95f427f0f58bf47efcb6951be1d0c0"
+  },
+  {
+    "file": "seed-18.png",
+    "title": "慢归慢，气势不能输",
+    "category": "吊图",
+    "tags": "蜗牛,乌龟,赛车,起跑线,慢速",
+    "keywords": "比赛,加油,打气,认真,车手",
+    "scene": "朋友说“你这进度有点慢”时。",
+    "description": "别的车早跑远了，蜗牛还在起跑线板着脸，乌龟技师急着给它打气。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "蜗牛赛车手与紧张的乌龟技师",
+    "sourceVariant": "original",
+    "bytes": 2326935,
+    "sha256": "8d3c5974257f99dd189e3abd9c9485f67d04d3a4292d2da0127f114f00a71a14"
   }
 ]

@@ -86,5 +86,16 @@
     "height": 1402,
     "bytes": 2206074,
     "sha256": "4197508fb6c3e831b5378292ca64ae1c5d95f427f0f58bf47efcb6951be1d0c0"
+  },
+  {
+    "file": "seed-media/seed-18.png",
+    "purpose": "图库原创吊图：慢归慢，气势不能输",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A126c6dff-0709-4102-b745-dd25cef9d5ba",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 2326935,
+    "sha256": "8d3c5974257f99dd189e3abd9c9485f67d04d3a4292d2da0127f114f00a71a14"
   }
 ]
