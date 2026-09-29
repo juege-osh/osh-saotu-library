@@ -18,3 +18,5 @@
 .review-progress{font-size:12px;color:#5e6a42;background:#eef4e1;padding:9px 12px;border-radius:5px;white-space:nowrap}
 
 .joke-search{display:flex;flex-direction:row;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:10px 14px;margin:0 0 16px;font-size:13px;font-weight:700}.joke-search input{flex:1;min-width:0;border:0;outline:0;background:#f6f7f9;border-radius:5px;padding:11px 13px;font-size:13px}.joke-search input:focus-visible{outline:2px solid #91ab1c}.joke-search+.joke-filters{margin-top:0}
+
+.detail-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-4px 0 16px}.detail-nav span{font-size:12px;color:var(--muted);white-space:nowrap}
