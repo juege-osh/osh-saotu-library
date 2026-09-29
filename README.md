@@ -1,6 +1,6 @@
 # 每日骚图
 
-每天找一张能接梗的图，也把自己的好图分享出来。现在有 15 张可直接浏览的首批图片和 28 条本站原创段子。图片来源、授权、作者、文件大小和 SHA-256 校验值见 [seed-manifest.json](seed-manifest.json)。
+每天找一张能接梗的图，也把自己的好图分享出来。现在有 15 张可直接浏览的首批图片和 40 条本站原创段子。图片来源、授权、作者、文件大小和 SHA-256 校验值见 [seed-manifest.json](seed-manifest.json)。
 
 计划域名：`https://saotu.osh.lol`。技术栈沿用打卡小队：Go 1.26、SQLite、原生 HTML/CSS/JavaScript。账号沿用提示词网站，投稿、额度、审核和会员订单单独保存。
 
