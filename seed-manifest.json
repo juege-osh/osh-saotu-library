@@ -304,5 +304,22 @@
     "sourceVariant": "original",
     "bytes": 1927303,
     "sha256": "834f1d9601f7eb853ba26298726078088b4c946824c123d6b9ba5a1822a862d2"
+  },
+  {
+    "file": "seed-20.png",
+    "title": "火锅里先学会游泳",
+    "category": "吊图",
+    "tags": "饺子,火锅,游泳,救生圈,面条",
+    "keywords": "吃饭,麻辣,自救,慌张,下锅",
+    "scene": "朋友问你能不能吃辣时。",
+    "description": "饺子刚下锅就套上救生圈，面条伸过来当救援绳。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "火锅里的饺子大救援",
+    "sourceVariant": "original",
+    "bytes": 2389760,
+    "sha256": "ad6b16ed33fcdcebacaa61bcccdbf08e92700b9447d3a00768a7c1cc3eb44cae"
   }
 ]
