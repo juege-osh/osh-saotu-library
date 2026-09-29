@@ -125,6 +125,7 @@ func (s *server) routes() http.Handler {
 	}
 	mux.HandleFunc("GET /api/library/bootstrap", s.libraryBootstrap)
 	mux.HandleFunc("GET /api/library/images", s.browseImages)
+	mux.HandleFunc("GET /api/library/random", s.randomImage)
 	mux.HandleFunc("GET /api/library/images/{id}", s.imageDetail)
 	mux.HandleFunc("GET /api/library/jokes", s.browseJokes)
 	mux.HandleFunc("GET /api/library/favorites", s.requireLevel(1, s.listFavorites))

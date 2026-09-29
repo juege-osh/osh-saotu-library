@@ -631,6 +631,22 @@ func TestImageDetailPublicOnly(t *testing.T) {
 	}
 }
 
+func TestRandomImageOnlyReturnsApproved(t *testing.T) {
+	s := testLibrary(t)
+	pending := seedImage(t, s, 2, "pending")
+	w := httptest.NewRecorder()
+	s.randomImage(w, httptest.NewRequest("GET", "/api/library/random", nil))
+	if w.Code != 404 {
+		t.Fatal("pending image appeared in an empty public library", w.Body.String())
+	}
+	approved := seedImage(t, s, 1, "approved")
+	w = httptest.NewRecorder()
+	s.randomImage(w, httptest.NewRequest("GET", "/api/library/random", nil))
+	if w.Code != 200 || !strings.Contains(w.Body.String(), fmt.Sprintf(`"id":%d`, approved)) || strings.Contains(w.Body.String(), fmt.Sprintf(`"id":%d`, pending)) {
+		t.Fatal("random image did not return the approved item", w.Body.String())
+	}
+}
+
 func TestReportsAreDeduplicatedAndCanHideImage(t *testing.T) {
 	s := testLibrary(t)
 	id := seedImage(t, s, 3, "approved")

@@ -236,6 +236,19 @@ func (s *server) browseImages(w http.ResponseWriter, r *http.Request) {
 	where, args := searchWhere(q, cat)
 	s.sendImages(w, r, where, args)
 }
+func (s *server) randomImage(w http.ResponseWriter, r *http.Request) {
+	var id int64
+	if e := s.appDB.QueryRow(`select id from library_images where status='approved' order by random() limit 1`).Scan(&id); e != nil {
+		apiError(w, 404, "图库里还没有图片")
+		return
+	}
+	items, _, e := s.imageList("i.status='approved' and i.id=?", []any{id}, 1)
+	if e != nil || len(items) == 0 {
+		apiError(w, 500, "随机图片暂时打不开")
+		return
+	}
+	jsonResponse(w, map[string]any{"item": items[0]})
+}
 func (s *server) imageDetail(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil || id <= 0 {
