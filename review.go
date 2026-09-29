@@ -251,7 +251,13 @@ func (s *server) moderateImage(w http.ResponseWriter, r *http.Request, u *curren
 		return
 	}
 	id, _ := strconv.ParseInt(r.PathValue("id"), 10, 64)
-	res, e := s.appDB.Exec(`update library_images set status='hidden',reason=?,reviewed_at=? where id=? and status='approved'`, in.Reason, appNow(), id)
+	tx, e := s.appDB.BeginTx(r.Context(), nil)
+	if e != nil {
+		apiError(w, 500, "下架失败")
+		return
+	}
+	defer tx.Rollback()
+	res, e := tx.Exec(`update library_images set status='hidden',reason=?,reviewed_at=? where id=? and status='approved'`, in.Reason, appNow(), id)
 	if e != nil {
 		apiError(w, 500, "下架失败")
 		return
@@ -259,6 +265,10 @@ func (s *server) moderateImage(w http.ResponseWriter, r *http.Request, u *curren
 	n, _ := res.RowsAffected()
 	if n == 0 {
 		apiError(w, 404, "图片不存在或已下架")
+		return
+	}
+	if _, e = tx.Exec(`update library_reports set status='hidden',decided_at=?,decided_by=? where image_id=? and status='pending'`, appNow(), u.ID, id); e != nil || tx.Commit() != nil {
+		apiError(w, 500, "下架失败")
 		return
 	}
 	jsonResponse(w, map[string]any{"ok": true})

@@ -25,6 +25,8 @@ func initLibraryDB(db *sql.DB) error {
 		`create table if not exists library_searches(token text primary key,user_id integer not null,query text not null,category text not null,created_at text not null)`,
 		`create table if not exists library_downloads(token text primary key,user_id integer not null,image_id integer not null,created_at text not null)`,
 		`create table if not exists library_admin_applications(id integer primary key autoincrement,user_id integer not null,reason text not null,status text not null default 'pending',decision_reason text not null default '',created_at text not null,decided_at text,decided_by integer)`,
+		`create table if not exists library_reports(id integer primary key autoincrement,image_id integer not null references library_images(id),user_id integer not null references users(id),reason text not null,status text not null default 'pending',created_at text not null,decided_at text,decided_by integer,unique(image_id,user_id))`,
+		`create index if not exists library_reports_pending on library_reports(status,id)`,
 		`create unique index if not exists library_application_pending on library_admin_applications(user_id) where status='pending'`,
 		`update member_plans set status=0 where plan_code not like 'saotu_%'`, `update point_packages set status=0`,
 	} {
@@ -231,6 +233,23 @@ func (s *server) browseImages(w http.ResponseWriter, r *http.Request) {
 	}
 	where, args := searchWhere(q, cat)
 	s.sendImages(w, r, where, args)
+}
+func (s *server) imageDetail(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil || id <= 0 {
+		apiError(w, 404, "图片不存在")
+		return
+	}
+	items, _, err := s.imageList("i.status='approved' and i.id=?", []any{id}, 1)
+	if err != nil {
+		apiError(w, 500, "图片读取失败")
+		return
+	}
+	if len(items) == 0 {
+		apiError(w, 404, "图片不存在或已下架")
+		return
+	}
+	jsonResponse(w, map[string]any{"item": items[0]})
 }
 func searchWhere(q, cat string) (string, []any) {
 	where := "i.status='approved'"

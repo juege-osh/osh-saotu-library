@@ -408,3 +408,81 @@ func TestAuthBridgeCrossOriginAndPrivateMedia(t *testing.T) {
 		t.Fatal("cross origin allowed")
 	}
 }
+
+func TestInitialSeedProvenanceAndIdempotence(t *testing.T) {
+	s := testLibrary(t)
+	for n := 0; n < 2; n++ {
+		if err := seedInitialLibrary(s.appDB, s.mediaDir); err != nil {
+			t.Fatal(err)
+		}
+	}
+	var count, bytes, invalid int
+	err := s.appDB.QueryRow(`select count(*),coalesce(sum(bytes),0),sum(case when status!='approved' or user_id!=-1 or source not like 'https://commons.wikimedia.org/%' then 1 else 0 end) from library_images`).Scan(&count, &bytes, &invalid)
+	if err != nil || count != 9 || invalid != 0 || bytes > 100_000_000 {
+		t.Fatalf("seed state: count=%d bytes=%d invalid=%d err=%v", count, bytes, invalid, err)
+	}
+	hero, err := assets.ReadFile("hero.png")
+	if err != nil || bytes+len(hero) > 100_000_000 {
+		t.Fatalf("starter image budget: bytes=%d hero=%d err=%v", bytes, len(hero), err)
+	}
+	w := httptest.NewRecorder()
+	s.browseJokes(w, httptest.NewRequest("GET", "/api/library/jokes", nil))
+	var jokes []map[string]any
+	if w.Code != 200 || json.Unmarshal(w.Body.Bytes(), &jokes) != nil || len(jokes) < 20 {
+		t.Fatalf("jokes endpoint: code=%d count=%d", w.Code, len(jokes))
+	}
+}
+
+func TestImageDetailPublicOnly(t *testing.T) {
+	s := testLibrary(t)
+	approved := seedImage(t, s, 1, "approved")
+	pending := seedImage(t, s, 2, "pending")
+	for _, tc := range []struct {
+		id   int64
+		code int
+	}{{approved, 200}, {pending, 404}} {
+		r := httptest.NewRequest("GET", fmt.Sprintf("/api/library/images/%d", tc.id), nil)
+		r.SetPathValue("id", fmt.Sprint(tc.id))
+		w := httptest.NewRecorder()
+		s.imageDetail(w, r)
+		if w.Code != tc.code {
+			t.Fatalf("image %d: code %d, want %d", tc.id, w.Code, tc.code)
+		}
+	}
+}
+
+func TestReportsAreDeduplicatedAndCanHideImage(t *testing.T) {
+	s := testLibrary(t)
+	id := seedImage(t, s, 3, "approved")
+	body := fmt.Sprintf(`{"imageId":%d,"reason":"这张图片涉及隐私，请核查"}`, id)
+	if w := call(s, 2, s.reportImage, "/api/library/reports", body); w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	if w := call(s, 2, s.reportImage, "/api/library/reports", body); w.Code != 409 {
+		t.Fatal("duplicate report accepted", w.Body.String())
+	}
+	w := httptest.NewRecorder()
+	s.listReports(w, httptest.NewRequest("GET", "/api/library/reports", nil), user(2))
+	if w.Code != 403 {
+		t.Fatal("ordinary user read report queue")
+	}
+	w = httptest.NewRecorder()
+	s.listReports(w, httptest.NewRequest("GET", "/api/library/reports", nil), user(1))
+	if w.Code != 200 || !strings.Contains(w.Body.String(), "涉及隐私") {
+		t.Fatal(w.Body.String())
+	}
+	r := httptest.NewRequest("POST", "/api/library/reports/1", strings.NewReader(`{"decision":"hide"}`))
+	r.SetPathValue("id", "1")
+	w = httptest.NewRecorder()
+	s.decideReport(w, r, user(1))
+	if w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	w = httptest.NewRecorder()
+	r = httptest.NewRequest("GET", fmt.Sprintf("/api/library/images/%d", id), nil)
+	r.SetPathValue("id", fmt.Sprint(id))
+	s.imageDetail(w, r)
+	if w.Code != 404 {
+		t.Fatal("hidden image remains public")
+	}
+}

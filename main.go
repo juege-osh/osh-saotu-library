@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-//go:embed index.html style.css app.js web-vendor/qrcode.min.js
+//go:embed index.html style.css app.js jokes.json hero.png web-vendor/qrcode.min.js
 var assets embed.FS
 
 type server struct {
@@ -125,11 +125,16 @@ func (s *server) routes() http.Handler {
 	}
 	mux.HandleFunc("GET /api/library/bootstrap", s.libraryBootstrap)
 	mux.HandleFunc("GET /api/library/images", s.browseImages)
+	mux.HandleFunc("GET /api/library/images/{id}", s.imageDetail)
+	mux.HandleFunc("GET /api/library/jokes", s.browseJokes)
 	mux.HandleFunc("POST /api/library/search", s.requireLevel(1, s.searchImages))
 	mux.HandleFunc("POST /api/library/uploads", s.requireLevel(1, s.uploadImage))
 	mux.HandleFunc("GET /api/library/mine", s.requireLevel(1, s.myImages))
 	mux.HandleFunc("GET /api/library/review-queue", s.requireLevel(1, s.reviewQueue))
 	mux.HandleFunc("POST /api/library/reviews", s.requireLevel(1, s.reviewImage))
+	mux.HandleFunc("POST /api/library/reports", s.requireLevel(1, s.reportImage))
+	mux.HandleFunc("GET /api/library/reports", s.requireLevel(1, s.listReports))
+	mux.HandleFunc("POST /api/library/reports/{id}", s.requireLevel(1, s.decideReport))
 	mux.HandleFunc("POST /api/library/downloads/{id}", s.requireLevel(1, s.downloadImage))
 	mux.HandleFunc("GET /api/library/downloads/{id}", s.requireLevel(1, s.downloadTicket))
 	mux.HandleFunc("GET /api/library/previews/{id}", s.previewImage)
@@ -153,7 +158,7 @@ func (s *server) routes() http.Handler {
 			name = "index.html"
 		}
 		switch name {
-		case "index.html", "style.css", "app.js", "web-vendor/qrcode.min.js":
+		case "index.html", "style.css", "app.js", "hero.png", "web-vendor/qrcode.min.js":
 		default:
 			http.NotFound(w, r)
 			return
@@ -207,6 +212,9 @@ func main() {
 		log.Fatal(err)
 	}
 	if err = os.MkdirAll(*media, 0700); err != nil {
+		log.Fatal(err)
+	}
+	if err = seedInitialLibrary(db, *media); err != nil {
 		log.Fatal(err)
 	}
 	founder, _ := strconv.ParseInt(os.Getenv("FOUNDER_USER_ID"), 10, 64)
