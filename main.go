@@ -152,9 +152,7 @@ func (s *server) routes() http.Handler {
 	mux.HandleFunc("POST /api/payments/notify/huifu", s.huifuNotify)
 	mux.HandleFunc("GET /api/payments/notify/huifu", s.huifuNotify)
 	mux.HandleFunc("GET /api/payments/products", s.paymentProducts)
-	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
-		jsonResponse(w, map[string]any{"ok": true, "service": "saotu-osh", "version": "1.0.0"})
-	})
+	mux.HandleFunc("GET /api/health", s.health)
 	mux.HandleFunc("GET /robots.txt", s.robots)
 	mux.HandleFunc("GET /sitemap.xml", s.sitemap)
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {

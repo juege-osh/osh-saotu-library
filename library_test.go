@@ -558,6 +558,26 @@ func TestJokeSharePreview(t *testing.T) {
 	}
 }
 
+func TestHealthChecksStorage(t *testing.T) {
+	s := testLibrary(t)
+	request := func() int {
+		w := httptest.NewRecorder()
+		s.routes().ServeHTTP(w, httptest.NewRequest("GET", "/api/health", nil))
+		return w.Code
+	}
+	if code := request(); code != 200 {
+		t.Fatal("healthy service rejected", code)
+	}
+	s.mediaDir = filepath.Join(s.mediaDir, "missing")
+	if code := request(); code != 503 {
+		t.Fatal("missing media storage not detected", code)
+	}
+	s.appDB.Close()
+	if code := request(); code != 503 {
+		t.Fatal("closed database not detected", code)
+	}
+}
+
 func TestImageDetailPublicOnly(t *testing.T) {
 	s := testLibrary(t)
 	approved := seedImage(t, s, 1, "approved")
