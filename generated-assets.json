@@ -295,5 +295,60 @@
     "height": 1024,
     "bytes": 3352804,
     "sha256": "8b4438dac1ff6613c7d12982b0fd6ce3219991023e7aa22fe10010a4789adbcb"
+  },
+  {
+    "file": "seed-media/seed-37.png",
+    "purpose": "图库原创吊图：今天外卖袋送我回家",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A53206d51-30a9-4270-9a85-9eea9cfada6f",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2155813,
+    "sha256": "695654a998a110d366c1ec94a5e7d5c2ba4159b10875bf409447aa14a4670082"
+  },
+  {
+    "file": "seed-media/seed-38.png",
+    "purpose": "图库原创骚图：钱包看完购物车连夜跑路",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A80cd64ae-6afd-4128-bd33-ffb15aa28b57",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2580666,
+    "sha256": "245b806d0a6ad8ede6d0e58501f58aedafe68612c602836f5e232202b570ee20"
+  },
+  {
+    "file": "seed-media/seed-39.png",
+    "purpose": "图库原创搞图：今天是哑铃练我",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A5ca26443-2a5c-42d0-b700-86275f576c0f",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2615984,
+    "sha256": "5d2f273f518d9e964f2566fecd67baee102ba50f5cd1365c653160786887d5a8"
+  },
+  {
+    "file": "seed-media/seed-40.png",
+    "purpose": "图库原创搞图：拖把说，今天我来拖你",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A524d0f83-aa44-42e1-b9dc-cc39e653deb5",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2299942,
+    "sha256": "86d49ebfe9e966d2a54ba116d855fe5ad444bb8b779356f613ab2765d5cba9a4"
+  },
+  {
+    "file": "seed-media/seed-41.png",
+    "purpose": "图库原创吊图：今天轮到书读我",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A884b1bbd-0c4c-41ec-89b9-6df6dba36593",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2782478,
+    "sha256": "c615c630fe8688b901c2ee2b8cd5bc244607262a7555a9337f65f6b16aca6264"
   }
 ]

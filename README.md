@@ -1,6 +1,6 @@
 # 每日骚图
 
-每天找一张能接梗的图，也把自己的好图分享出来。现在有 35 张可直接浏览的首批图片和 50 条本站原创段子。图片来源、授权、作者、文件大小和 SHA-256 校验值见 [seed-manifest.json](seed-manifest.json)。
+每天找一张能接梗的图，也把自己的好图分享出来。现在有 40 张可直接浏览的首批图片和 50 条本站原创段子。图片来源、授权、作者、文件大小和 SHA-256 校验值见 [seed-manifest.json](seed-manifest.json)。
 
 计划域名：`https://saotu.osh.lol`。技术栈沿用打卡小队：Go 1.26、SQLite、原生 HTML/CSS/JavaScript。账号沿用提示词网站，投稿、额度、审核和会员订单单独保存。
 
@@ -31,7 +31,7 @@
 
 ## 首批内容
 
-首批外部图片只选 Wikimedia Commons 标注为 CC0 或公有领域的条目，并在导入时核对许可、文件大小和 SHA-256。站点保留作品页面与作者说明；其中 3 张使用 Wikimedia 提供的缩略版本，详情页如实显示实际可下载尺寸。首页插画及图库中的原创搞图、表情包由 Google Chrome 的 GPT Image 2 生成，记录见 [generated-assets.json](generated-assets.json)。段子由本站原创撰写，没有抓取其他站点的文案。图库原文件与首页插画合计 71,416,825 字节，低于 100 MB 上限。运行时预览图另由服务端生成。
+首批外部图片只选 Wikimedia Commons 标注为 CC0 或公有领域的条目，并在导入时核对许可、文件大小和 SHA-256。站点保留作品页面与作者说明；其中 3 张使用 Wikimedia 提供的缩略版本，详情页如实显示实际可下载尺寸。首页插画及图库中的原创搞图、表情包由 Google Chrome 的 GPT Image 2 生成，记录见 [generated-assets.json](generated-assets.json)。段子由本站原创撰写，没有抓取其他站点的文案。图库原文件与首页插画合计 83,851,708 字节，低于 100 MB 上限。运行时预览图另由服务端生成。
 
 ## 本地运行
 
