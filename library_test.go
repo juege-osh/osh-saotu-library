@@ -520,8 +520,21 @@ func TestSharePreviewOnlyForApprovedImage(t *testing.T) {
 	if !strings.Contains(html, `property="og:image"`) || !strings.Contains(html, fmt.Sprintf("/api/library/previews/%d", approved)) || !strings.Contains(html, `&lt;script&gt;bad&lt;/script&gt;`) {
 		t.Fatal("approved image preview missing or unescaped")
 	}
-	if strings.Contains(get(pending), `property="og:image"`) {
+	if !strings.Contains(get(pending), `content="https://saotu.osh.lol/hero.png"`) || strings.Contains(get(pending), fmt.Sprintf("/api/library/previews/%d", pending)) {
 		t.Fatal("pending image leaked to share preview")
+	}
+}
+
+func TestSitemapExcludesUnpublishedImages(t *testing.T) {
+	s := testLibrary(t)
+	approved := seedImage(t, s, 2, "approved")
+	pending := seedImage(t, s, 2, "pending")
+	hidden := seedImage(t, s, 2, "hidden")
+	w := httptest.NewRecorder()
+	s.routes().ServeHTTP(w, httptest.NewRequest("GET", "/sitemap.xml", nil))
+	content := w.Body.String()
+	if w.Code != 200 || !strings.Contains(content, fmt.Sprintf("?image=%d", approved)) || strings.Contains(content, fmt.Sprintf("?image=%d", pending)) || strings.Contains(content, fmt.Sprintf("?image=%d", hidden)) {
+		t.Fatal("sitemap publication boundary", w.Code, content)
 	}
 }
 
