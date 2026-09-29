@@ -119,5 +119,38 @@
     "height": 1024,
     "bytes": 2389760,
     "sha256": "ad6b16ed33fcdcebacaa61bcccdbf08e92700b9447d3a00768a7c1cc3eb44cae"
+  },
+  {
+    "file": "seed-media/seed-21.png",
+    "purpose": "图库原创搞图：乌云也怕被淋湿",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Aec91cb35-8027-4e6d-8907-39ef389d873b",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2599162,
+    "sha256": "d5f869a14ffca404a9d9ed0063f46bab0c75b51ef785af68fec203df1b34ff10"
+  },
+  {
+    "file": "seed-media/seed-22.png",
+    "purpose": "图库原创表情包：连咖啡都得先喝杯咖啡",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A6f74b009-458c-4786-92ee-50b217215eee",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1612045,
+    "sha256": "55fceff9431af0fb6b291ada5d21024997eb7d0f01f305759d7b99c26eab8a39"
+  },
+  {
+    "file": "seed-media/seed-23.png",
+    "purpose": "图库原创吊图：遥控器说它在度假",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A69166764-ddca-4b77-8225-1466d864002b",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2577361,
+    "sha256": "3cf0f5e763ef7294811033d8ae05711e27f6d0966d376f857a1e485da935f842"
   }
 ]
