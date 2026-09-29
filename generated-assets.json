@@ -31,5 +31,16 @@
     "height": 1402,
     "bytes": 2246888,
     "sha256": "b5289d11c4b3fd8693b87159c475ee3ed9d79757ad5429412027b7c887651a86"
+  },
+  {
+    "file": "seed-media/seed-13.png",
+    "purpose": "图库原创搞图：你先别慌，我也没伞",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc1685-c078-83ec-a8b2-8460f3303fe8",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 2514399,
+    "sha256": "2d57dae558d989ce937981891993e7b8b06ee937b5219606c33132abe48f11e9"
   }
 ]
