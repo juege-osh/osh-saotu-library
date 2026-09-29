@@ -240,5 +240,60 @@
     "height": 1024,
     "bytes": 2219740,
     "sha256": "daf56cbbcc6d2124c27ea62427f93af6ec4c2d16000e3133a726e8a1a28bad70"
+  },
+  {
+    "file": "seed-media/seed-32.png",
+    "purpose": "图库原创搞图：我还在刷，手机先累趴了",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Adbf55a31-fdce-4ad2-bb12-bee58e9a2b8e2151",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2021742,
+    "sha256": "ca9049d2c4bc8179b6282352fc060b5f1e4b6d6ea846a1d59f137762516e4011"
+  },
+  {
+    "file": "seed-media/seed-33.png",
+    "purpose": "图库原创吊图：地图自己都迷路了",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Ac31b3f68-47ee-4c4e-9be3-2a87b064c24c",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3388525,
+    "sha256": "e23cae294ab4f66d26b92c5adf03a528248cbcfba7df6c59c583e266801bce59"
+  },
+  {
+    "file": "seed-media/seed-34.png",
+    "purpose": "图库原创骚图：这回轮到快递拆我了",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A1d2e7cef-a161-48a3-9847-14307df6b66c",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2520604,
+    "sha256": "3f8909895e466648a613ad4142998febdf13ff27213572564e2e2453847ce3ac"
+  },
+  {
+    "file": "seed-media/seed-35.png",
+    "purpose": "图库原创骚图：空调去度假，留我在家蒸",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Afbdbc3ae-ce12-49b2-9a28-7ca276363000",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2637522,
+    "sha256": "249bd37ba4fa379030228924bd172c25f72f8771429aa29739f3f381da81cab1"
+  },
+  {
+    "file": "seed-media/seed-36.png",
+    "purpose": "图库原创表情包：待办清单都比我先跑路",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Ad224104e-3691-4c3a-bdc1-39d05b6f948d",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 3352804,
+    "sha256": "8b4438dac1ff6613c7d12982b0fd6ce3219991023e7aa22fe10010a4789adbcb"
   }
 ]
