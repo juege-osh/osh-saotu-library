@@ -97,5 +97,16 @@
     "height": 1402,
     "bytes": 2326935,
     "sha256": "8d3c5974257f99dd189e3abd9c9485f67d04d3a4292d2da0127f114f00a71a14"
+  },
+  {
+    "file": "seed-media/seed-19.png",
+    "purpose": "图库原创骚图：八只手也回不过来",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Ada47aabe-4b34-4189-be95-07741f868f65",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 1927303,
+    "sha256": "834f1d9601f7eb853ba26298726078088b4c946824c123d6b9ba5a1822a862d2"
   }
 ]

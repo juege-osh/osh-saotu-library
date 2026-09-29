@@ -158,7 +158,11 @@ func (s *server) previewImage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	w.Header().Set("Cache-Control", "private, max-age=120")
+	if status == "approved" {
+		w.Header().Set("Cache-Control", "private, max-age=120")
+	} else {
+		w.Header().Set("Cache-Control", "private, no-store")
+	}
 	w.Header().Set("Content-Type", "image/jpeg")
 	http.ServeFile(w, r, filepath.Join(s.mediaDir, filepath.Base(path)))
 }
