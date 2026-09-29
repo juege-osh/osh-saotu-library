@@ -336,6 +336,9 @@ func TestUploadValidationDuplicateAndQuota(t *testing.T) {
 	if send(2, []byte("not an image")).Code != 400 {
 		t.Fatal("invalid image accepted")
 	}
+	if w := send(3, bytes.Repeat([]byte{'x'}, 13<<20)); w.Code != 400 || !strings.Contains(w.Body.String(), "最大 12 MB") {
+		t.Fatal("oversized multipart body accepted", w.Code)
+	}
 	if w := send(2, data.Bytes()); w.Code != 200 {
 		t.Fatal(w.Body.String())
 	}

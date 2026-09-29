@@ -21,6 +21,8 @@ import (
 )
 
 func (s *server) uploadImage(w http.ResponseWriter, r *http.Request, u *currentUser) {
+	// Bound the entire multipart body before the parser can spill it to disk.
+	r.Body = http.MaxBytesReader(w, r.Body, 13<<20)
 	if e := r.ParseMultipartForm(16 << 20); e != nil {
 		apiError(w, 400, "图片上传失败，文件最大 12 MB")
 		return
