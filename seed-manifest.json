@@ -253,5 +253,22 @@
     "sourceVariant": "original",
     "bytes": 2281006,
     "sha256": "cf634d4b4e12e8946cb16d81cc2c4f19d89eebc1c2c7b52df69d7aaca525112f"
+  },
+  {
+    "file": "seed-17.png",
+    "title": "陨石都来了，方案还没改完",
+    "category": "骚图",
+    "tags": "恐龙,陨石,加班,办公室,打工人",
+    "keywords": "世界末日,改方案,键盘,咖啡,短手",
+    "scene": "老板说“今天下班前改完”时。",
+    "description": "窗外陨石越来越近，霸王龙还在努力用小短手敲键盘。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "陨石来袭，霸王龙还在加班",
+    "sourceVariant": "original",
+    "bytes": 2206074,
+    "sha256": "4197508fb6c3e831b5378292ca64ae1c5d95f427f0f58bf47efcb6951be1d0c0"
   }
 ]

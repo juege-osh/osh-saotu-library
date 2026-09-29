@@ -75,5 +75,16 @@
     "height": 1402,
     "bytes": 2281006,
     "sha256": "cf634d4b4e12e8946cb16d81cc2c4f19d89eebc1c2c7b52df69d7aaca525112f"
+  },
+  {
+    "file": "seed-media/seed-17.png",
+    "purpose": "图库原创骚图：陨石都来了，方案还没改完",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc3238-6f68-83ec-97cc-6350ad582e86",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 2206074,
+    "sha256": "4197508fb6c3e831b5378292ca64ae1c5d95f427f0f58bf47efcb6951be1d0c0"
   }
 ]
