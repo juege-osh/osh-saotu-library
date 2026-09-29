@@ -219,5 +219,22 @@
     "sourceVariant": "original",
     "bytes": 1917959,
     "sha256": "161b464ebcb5368be77f22575a5008623e1edfca1fba3738a540c3d44af54842"
+  },
+  {
+    "file": "seed-15.png",
+    "title": "临时开会？我没看见",
+    "category": "表情包",
+    "tags": "乌龟,开会,消息,躲避,上班",
+    "keywords": "临时通知,已读不回,缩壳,拒绝,群聊",
+    "scene": "群里突然喊你开会时。",
+    "description": "手机都没来得及放下，乌龟已经缩回壳里了。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "乌龟躲开会消息",
+    "sourceVariant": "original",
+    "bytes": 1593431,
+    "sha256": "7d2350f28542fe88b9eac9633d33eb883425a92773999a8ce0895f91c499d51d"
   }
 ]
