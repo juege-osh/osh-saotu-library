@@ -202,5 +202,22 @@
     "sourceVariant": "original",
     "bytes": 2514399,
     "sha256": "2d57dae558d989ce937981891993e7b8b06ee937b5219606c33132abe48f11e9"
+  },
+  {
+    "file": "seed-14.png",
+    "title": "五个闹钟都劝不动我",
+    "category": "搞图",
+    "tags": "赖床,闹钟,刺猬,早起,周一",
+    "keywords": "起床,睡懒觉,早八,困,床",
+    "scene": "早八群里有人问“起了吗”的时候。",
+    "description": "闹钟们已经急成一排，床里的刺猬还在认真装睡。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "刺猬和五个闹钟",
+    "sourceVariant": "original",
+    "bytes": 1917959,
+    "sha256": "161b464ebcb5368be77f22575a5008623e1edfca1fba3738a540c3d44af54842"
   }
 ]

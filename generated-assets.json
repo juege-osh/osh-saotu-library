@@ -42,5 +42,16 @@
     "height": 1402,
     "bytes": 2514399,
     "sha256": "2d57dae558d989ce937981891993e7b8b06ee937b5219606c33132abe48f11e9"
+  },
+  {
+    "file": "seed-media/seed-14.png",
+    "purpose": "图库原创搞图：五个闹钟都劝不动我",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc1685-c078-83ec-a8b2-8460f3303fe8",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 1917959,
+    "sha256": "161b464ebcb5368be77f22575a5008623e1edfca1fba3738a540c3d44af54842"
   }
 ]

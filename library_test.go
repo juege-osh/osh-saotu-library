@@ -473,7 +473,7 @@ func TestInitialSeedProvenanceAndIdempotence(t *testing.T) {
 	}
 	var count, bytes, invalid int
 	err := s.appDB.QueryRow(`select count(*),coalesce(sum(bytes),0),sum(case when status!='approved' or user_id!=-1 or (source not like 'https://commons.wikimedia.org/%' and source not like '本站原创%') then 1 else 0 end) from library_images`).Scan(&count, &bytes, &invalid)
-	if err != nil || count != 12 || invalid != 0 || bytes > 100_000_000 {
+	if err != nil || count != 13 || invalid != 0 || bytes > 100_000_000 {
 		t.Fatalf("seed state: count=%d bytes=%d invalid=%d err=%v", count, bytes, invalid, err)
 	}
 	hero, err := assets.ReadFile("hero.png")
@@ -502,7 +502,7 @@ func TestInitialSeedProvenanceAndIdempotence(t *testing.T) {
 	if err := s.appDB.QueryRow(`select id,sha256 from library_images where title='谁也别说谁'`).Scan(&id, &hash); err != nil || id != originalID || hash != originalHash {
 		t.Fatalf("starter image was duplicated or not repaired: id=%d hash=%s err=%v", id, hash, err)
 	}
-	if err := s.appDB.QueryRow(`select count(*) from library_images`).Scan(&count); err != nil || count != 12 {
+	if err := s.appDB.QueryRow(`select count(*) from library_images`).Scan(&count); err != nil || count != 13 {
 		t.Fatalf("starter image count after repair: %d, %v", count, err)
 	}
 }
