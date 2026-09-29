@@ -185,5 +185,60 @@
     "height": 1024,
     "bytes": 2006158,
     "sha256": "877e0190fbc6bcd4e1eb5d6bbef10112b4e12d7f96d26995cf08eb2207c8b972"
+  },
+  {
+    "file": "seed-media/seed-27.png",
+    "purpose": "图库原创骚图：鼠标先下班了",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A06a7845d-7a8c-41e4-a112-07a502e9a03a",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2688626,
+    "sha256": "9890b3d8f34d41d901102ed316c0abc9423e480ee11ef9e5771c23c615fe9588"
+  },
+  {
+    "file": "seed-media/seed-28.png",
+    "purpose": "图库原创表情包：我今天就剩两颗脑细胞",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc4219-f3fc-83ec-b6d8-bcda5a2a2151",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 1417691,
+    "sha256": "9ec87d34572b9efdee9a738813808cfdb5fd9638223c8d485fa85c70867e0738"
+  },
+  {
+    "file": "seed-media/seed-29.png",
+    "purpose": "图库原创吊图：到底谁带谁旅行",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A69c7557c-90eb-45fc-85a0-365df9fef777",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2914202,
+    "sha256": "efc17280f500f835165e19450bf49faf38ee2d7ad38c3291bbbb227da906b66f"
+  },
+  {
+    "file": "seed-media/seed-30.png",
+    "purpose": "图库原创搞图：今天轮到绿植养我",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3Ab1739557-8d53-410f-959d-cb4233ad022f",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2571999,
+    "sha256": "d5effa1db841c621270cc1050bd79d8f3720e4e1bd96da1b3f723c4129115fc9"
+  },
+  {
+    "file": "seed-media/seed-31.png",
+    "purpose": "图库原创搞图：周末轮到我叫闹钟起床",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/local-chatgpt%3A3f8b1397-6066-4d84-b73f-614dc5ae0341",
+    "width": 1536,
+    "height": 1024,
+    "bytes": 2219740,
+    "sha256": "daf56cbbcc6d2124c27ea62427f93af6ec4c2d16000e3133a726e8a1a28bad70"
   }
 ]
