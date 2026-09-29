@@ -171,6 +171,9 @@ func (s *server) routes() http.Handler {
 			http.NotFound(w, r)
 			return
 		}
+		if name == "index.html" {
+			data = s.indexWithSharePreview(r, data)
+		}
 		w.Header().Set("Content-Type", mime.TypeByExtension(filepath.Ext(name)))
 		w.Header().Set("Cache-Control", "no-cache")
 		w.Write(data)

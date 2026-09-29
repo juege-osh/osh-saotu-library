@@ -52,7 +52,7 @@ func seedOneImage(db *sql.DB, mediaDir string, item seedEntry) error {
 	if err := db.QueryRow(`select count(*) from library_images where sha256=?`, item.SHA256).Scan(&exists); err != nil || exists > 0 {
 		return err
 	}
-	if item.File == "" || filepath.Base(item.File) != item.File || !validCategory(item.Category, false) || item.License != "CC0" && item.License != "Public domain" {
+	if item.File == "" || filepath.Base(item.File) != item.File || !validCategory(item.Category, false) || item.License != "CC0" && item.License != "Public domain" && item.License != "本站原创" {
 		return fmt.Errorf("素材清单无效")
 	}
 	data, err := seedAssets.ReadFile("seed-media/" + item.File)

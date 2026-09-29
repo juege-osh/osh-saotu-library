@@ -151,5 +151,39 @@
     "sourceVariant": "Wikimedia thumbnail",
     "bytes": 345998,
     "sha256": "0c8b89b672933a9420e4d82392bd90fba056c2efe4cfd6a412d0b70cb93aefba"
+  },
+  {
+    "file": "seed-11.png",
+    "title": "我没摸鱼，我在光合作用",
+    "category": "搞图",
+    "tags": "上班,摸鱼,猫猫,水豚,办公室",
+    "keywords": "伪装,绿植,打工,工牌,偷懒",
+    "scene": "被问怎么还没回消息时。",
+    "description": "工牌都挂到叶子上了，还是没躲过隔壁同事的眼神。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "办公室光合作用",
+    "sourceVariant": "original",
+    "bytes": 2345745,
+    "sha256": "7a80b6d51572b19267854d9e6c88dfbce2e92ebdb43873086fada8a2b9a8990f"
+  },
+  {
+    "file": "seed-12.png",
+    "title": "谁也别说谁",
+    "category": "搞图",
+    "tags": "夜宵,偷吃,水豚,猫猫,冰箱",
+    "keywords": "深夜,厨房,蛋糕,香肠,心虚",
+    "scene": "深夜被抓到偷吃时，发给同伙。",
+    "description": "冰箱灯一亮，两个嫌疑人先确认对方会不会告密。",
+    "source": "本站原创插画（Google Chrome GPT Image 2）",
+    "license": "本站原创",
+    "licenseUrl": "",
+    "author": "图库编辑部",
+    "originalTitle": "深夜冰箱同伙",
+    "sourceVariant": "original",
+    "bytes": 2286987,
+    "sha256": "57ec9bda66231cc8da783ebcadf91987980520143511d0ab123568e00f7f9beb"
   }
 ]

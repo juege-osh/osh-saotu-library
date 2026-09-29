@@ -9,5 +9,27 @@
     "height": 1024,
     "bytes": 1962475,
     "sha256": "537e289bd16daecc249b2838fbbc6f30c3e2873054f20d2f5e0f1dfe308595f2"
+  },
+  {
+    "file": "seed-media/seed-11.png",
+    "purpose": "图库原创搞图：我没摸鱼，我在光合作用",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc1685-c078-83ec-a8b2-8460f3303fe8",
+    "width": 1122,
+    "height": 1402,
+    "bytes": 2345745,
+    "sha256": "7a80b6d51572b19267854d9e6c88dfbce2e92ebdb43873086fada8a2b9a8990f"
+  },
+  {
+    "file": "seed-media/seed-12.png",
+    "purpose": "图库原创搞图：谁也别说谁",
+    "model": "GPT Image 2",
+    "createdIn": "Google Chrome",
+    "conversation": "https://chatgpt.com/c/6abc1685-c078-83ec-a8b2-8460f3303fe8",
+    "width": 1024,
+    "height": 1536,
+    "bytes": 2286987,
+    "sha256": "57ec9bda66231cc8da783ebcadf91987980520143511d0ab123568e00f7f9beb"
   }
 ]

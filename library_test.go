@@ -458,8 +458,8 @@ func TestInitialSeedProvenanceAndIdempotence(t *testing.T) {
 		}
 	}
 	var count, bytes, invalid int
-	err := s.appDB.QueryRow(`select count(*),coalesce(sum(bytes),0),sum(case when status!='approved' or user_id!=-1 or source not like 'https://commons.wikimedia.org/%' then 1 else 0 end) from library_images`).Scan(&count, &bytes, &invalid)
-	if err != nil || count != 9 || invalid != 0 || bytes > 100_000_000 {
+	err := s.appDB.QueryRow(`select count(*),coalesce(sum(bytes),0),sum(case when status!='approved' or user_id!=-1 or (source not like 'https://commons.wikimedia.org/%' and source not like '本站原创%') then 1 else 0 end) from library_images`).Scan(&count, &bytes, &invalid)
+	if err != nil || count != 11 || invalid != 0 || bytes > 100_000_000 {
 		t.Fatalf("seed state: count=%d bytes=%d invalid=%d err=%v", count, bytes, invalid, err)
 	}
 	hero, err := assets.ReadFile("hero.png")
@@ -471,6 +471,27 @@ func TestInitialSeedProvenanceAndIdempotence(t *testing.T) {
 	var jokes []map[string]any
 	if w.Code != 200 || json.Unmarshal(w.Body.Bytes(), &jokes) != nil || len(jokes) < 20 {
 		t.Fatalf("jokes endpoint: code=%d count=%d", w.Code, len(jokes))
+	}
+}
+func TestSharePreviewOnlyForApprovedImage(t *testing.T) {
+	s := testLibrary(t)
+	approved := seedImage(t, s, 2, "approved")
+	pending := seedImage(t, s, 2, "pending")
+	s.appDB.Exec(`update library_images set title='<script>bad</script>' where id=?`, approved)
+	get := func(id int64) string {
+		w := httptest.NewRecorder()
+		s.routes().ServeHTTP(w, httptest.NewRequest("GET", fmt.Sprintf("/?image=%d", id), nil))
+		if w.Code != 200 {
+			t.Fatalf("share page status: %d", w.Code)
+		}
+		return w.Body.String()
+	}
+	html := get(approved)
+	if !strings.Contains(html, `property="og:image"`) || !strings.Contains(html, fmt.Sprintf("/api/library/previews/%d", approved)) || !strings.Contains(html, `&lt;script&gt;bad&lt;/script&gt;`) {
+		t.Fatal("approved image preview missing or unescaped")
+	}
+	if strings.Contains(get(pending), `property="og:image"`) {
+		t.Fatal("pending image leaked to share preview")
 	}
 }
 
