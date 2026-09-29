@@ -357,6 +357,41 @@ func TestUploadValidationDuplicateAndQuota(t *testing.T) {
 		t.Fatal("unapproved upload rewarded")
 	}
 }
+func TestWithdrawPendingRestoresUploadCreditOnce(t *testing.T) {
+	s := testLibrary(t)
+	id := seedImage(t, s, 2, "pending")
+	tx, err := s.appDB.Begin()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = consumeQuota(tx, 2, "upload", "upload:test-withdraw"); err != nil || tx.Commit() != nil {
+		t.Fatal("setup upload quota", err)
+	}
+	request := func(userID int64) *httptest.ResponseRecorder {
+		r := httptest.NewRequest("POST", "/api/library/mine/1/withdraw", nil)
+		r.SetPathValue("id", fmt.Sprint(id))
+		w := httptest.NewRecorder()
+		s.withdrawPending(w, r, user(userID))
+		return w
+	}
+	if w := request(3); w.Code != 409 {
+		t.Fatal("other user withdrew image", w.Code)
+	}
+	if w := request(2); w.Code != 200 {
+		t.Fatal(w.Body.String())
+	}
+	if got := s.quota(2)["upload"].(int); got != 1 {
+		t.Fatal("credit not restored", got)
+	}
+	if w := request(2); w.Code != 409 || s.quota(2)["upload"].(int) != 1 {
+		t.Fatal("duplicate withdrawal credited", w.Code)
+	}
+	var status string
+	s.appDB.QueryRow(`select status from library_images where id=?`, id).Scan(&status)
+	if status != "hidden" {
+		t.Fatal("withdrawn image still public", status)
+	}
+}
 func TestPremiumExpiryAndPrices(t *testing.T) {
 	s := testLibrary(t)
 	plans, e := s.loadMemberPlans()

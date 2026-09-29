@@ -133,6 +133,7 @@ func (s *server) routes() http.Handler {
 	mux.HandleFunc("POST /api/library/search", s.requireLevel(1, s.searchImages))
 	mux.HandleFunc("POST /api/library/uploads", s.requireLevel(1, s.uploadImage))
 	mux.HandleFunc("GET /api/library/mine", s.requireLevel(1, s.myImages))
+	mux.HandleFunc("POST /api/library/mine/{id}/withdraw", s.requireLevel(1, s.withdrawPending))
 	mux.HandleFunc("GET /api/library/review-queue", s.requireLevel(1, s.reviewQueue))
 	mux.HandleFunc("POST /api/library/reviews", s.requireLevel(1, s.reviewImage))
 	mux.HandleFunc("POST /api/library/reports", s.requireLevel(1, s.reportImage))
