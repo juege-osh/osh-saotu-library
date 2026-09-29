@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -36,6 +37,16 @@ func (s *server) sitemap(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://saotu.osh.lol/</loc></url>`)
 	for _, id := range ids {
 		fmt.Fprintf(w, `<url><loc>https://saotu.osh.lol/?image=%d</loc></url>`, id)
+	}
+	var jokes []struct {
+		ID int `json:"id"`
+	}
+	if data, err := assets.ReadFile("jokes.json"); err == nil && json.Unmarshal(data, &jokes) == nil {
+		for _, joke := range jokes {
+			if joke.ID > 0 {
+				fmt.Fprintf(w, `<url><loc>https://saotu.osh.lol/?joke=%d</loc></url>`, joke.ID)
+			}
+		}
 	}
 	fmt.Fprint(w, `</urlset>`)
 }

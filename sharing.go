@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"net/http"
@@ -30,6 +31,25 @@ func (s *server) indexWithSharePreview(r *http.Request, page []byte) []byte {
 			}
 			pageURL = fmt.Sprintf("https://saotu.osh.lol/?image=%d#library", id)
 			imageURL = fmt.Sprintf("https://saotu.osh.lol/api/library/previews/%d", id)
+		}
+	}
+	if pageURL == "https://saotu.osh.lol/" {
+		jokeID, jokeErr := strconv.Atoi(r.URL.Query().Get("joke"))
+		if jokeErr == nil && jokeID > 0 {
+			var jokes []struct {
+				ID   int    `json:"id"`
+				Text string `json:"text"`
+			}
+			if data, readErr := assets.ReadFile("jokes.json"); readErr == nil && json.Unmarshal(data, &jokes) == nil {
+				for _, joke := range jokes {
+					if joke.ID == jokeID {
+						title = "来一条段子 · 每日骚图"
+						description = joke.Text
+						pageURL = fmt.Sprintf("https://saotu.osh.lol/?joke=%d#jokes", jokeID)
+						break
+					}
+				}
+			}
 		}
 	}
 	meta := fmt.Sprintf(`<meta property="og:type" content="website"><meta property="og:site_name" content="每日骚图"><meta property="og:title" content="%s"><meta property="og:description" content="%s"><meta property="og:image" content="%s"><meta property="og:url" content="%s"><meta name="twitter:card" content="summary_large_image">`, html.EscapeString(title), html.EscapeString(description), html.EscapeString(imageURL), html.EscapeString(pageURL))

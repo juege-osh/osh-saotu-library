@@ -533,8 +533,25 @@ func TestSitemapExcludesUnpublishedImages(t *testing.T) {
 	w := httptest.NewRecorder()
 	s.routes().ServeHTTP(w, httptest.NewRequest("GET", "/sitemap.xml", nil))
 	content := w.Body.String()
-	if w.Code != 200 || !strings.Contains(content, fmt.Sprintf("?image=%d", approved)) || strings.Contains(content, fmt.Sprintf("?image=%d", pending)) || strings.Contains(content, fmt.Sprintf("?image=%d", hidden)) {
+	if w.Code != 200 || !strings.Contains(content, fmt.Sprintf("?image=%d", approved)) || !strings.Contains(content, "?joke=1") || strings.Contains(content, fmt.Sprintf("?image=%d", pending)) || strings.Contains(content, fmt.Sprintf("?image=%d", hidden)) {
 		t.Fatal("sitemap publication boundary", w.Code, content)
+	}
+}
+
+func TestJokeSharePreview(t *testing.T) {
+	s := testLibrary(t)
+	w := httptest.NewRecorder()
+	s.routes().ServeHTTP(w, httptest.NewRequest("GET", "/?joke=1", nil))
+	content := w.Body.String()
+	if w.Code != 200 || !strings.Contains(content, "老板问我为什么老看表") || !strings.Contains(content, "?joke=1#jokes") {
+		t.Fatal("joke share preview missing", w.Code)
+	}
+	for _, invalid := range []string{"0", "9999", "bad"} {
+		w = httptest.NewRecorder()
+		s.routes().ServeHTTP(w, httptest.NewRequest("GET", "/?joke="+invalid, nil))
+		if strings.Contains(w.Body.String(), "老板问我为什么老看表") {
+			t.Fatal("invalid joke leaked a preview", invalid)
+		}
 	}
 }
 
