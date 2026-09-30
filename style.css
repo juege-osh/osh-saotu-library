@@ -12,6 +12,7 @@
 
 .joke-card.joke-selected{border-color:#b8da32;box-shadow:0 0 0 3px #d8ff3e55}
 .joke-more{text-align:center;margin:24px 0 0}.joke-more .button{min-width:160px}.joke-more [hidden]{display:none}
+.file-drop{position:relative;cursor:pointer}.file-drop input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.file-drop:focus-within{border-color:#697943;box-shadow:0 0 0 2px #d8ff3e45}.file-pick{display:inline-block;background:#d8ff3e;color:#202125;border-radius:5px;padding:10px 15px;font-weight:700}.file-drop #fileName{max-width:100%;overflow-wrap:anywhere}
 
 .chip-scroll{display:flex;gap:9px;flex-wrap:wrap;min-width:0}.search-error + .filter-row{align-items:flex-start}.search-error + .filter-row .note{padding-top:8px}
 @media(max-width:740px){.search-error + .filter-row{display:block;margin:8px 0 12px}.search-error + .filter-row .chip-scroll{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;padding:2px 1px 4px}.search-error + .filter-row .chip-scroll::-webkit-scrollbar{display:none}.search-error + .filter-row .chip{flex:none}.search-error + .filter-row .note{display:block;padding:2px 0 0;margin:0}.hero>div:first-child{min-height:175px}.quota span:nth-child(4){display:none}}
