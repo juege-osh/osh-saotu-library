@@ -11,6 +11,7 @@
 .joke-filters{margin:-5px 0 20px}
 
 .joke-card.joke-selected{border-color:#b8da32;box-shadow:0 0 0 3px #d8ff3e55}
+.joke-more{text-align:center;margin:24px 0 0}.joke-more .button{min-width:160px}.joke-more [hidden]{display:none}
 
 .chip-scroll{display:flex;gap:9px;flex-wrap:wrap;min-width:0}.search-error + .filter-row{align-items:flex-start}.search-error + .filter-row .note{padding-top:8px}
 @media(max-width:740px){.search-error + .filter-row{display:block;margin:8px 0 12px}.search-error + .filter-row .chip-scroll{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;padding:2px 1px 4px}.search-error + .filter-row .chip-scroll::-webkit-scrollbar{display:none}.search-error + .filter-row .chip{flex:none}.search-error + .filter-row .note{display:block;padding:2px 0 0;margin:0}.hero>div:first-child{min-height:175px}.quota span:nth-child(4){display:none}}
