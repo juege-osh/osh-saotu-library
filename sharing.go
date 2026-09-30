@@ -52,6 +52,7 @@ func (s *server) indexWithSharePreview(r *http.Request, page []byte) []byte {
 			}
 		}
 	}
-	meta := fmt.Sprintf(`<meta property="og:type" content="website"><meta property="og:site_name" content="每日骚图"><meta property="og:title" content="%s"><meta property="og:description" content="%s"><meta property="og:image" content="%s"><meta property="og:url" content="%s"><meta name="twitter:card" content="summary_large_image">`, html.EscapeString(title), html.EscapeString(description), html.EscapeString(imageURL), html.EscapeString(pageURL))
+	canonical := strings.SplitN(pageURL, "#", 2)[0]
+	meta := fmt.Sprintf(`<link rel="canonical" href="%s"><meta property="og:type" content="website"><meta property="og:site_name" content="每日骚图"><meta property="og:title" content="%s"><meta property="og:description" content="%s"><meta property="og:image" content="%s"><meta property="og:url" content="%s"><meta name="twitter:card" content="summary_large_image">`, html.EscapeString(canonical), html.EscapeString(title), html.EscapeString(description), html.EscapeString(imageURL), html.EscapeString(pageURL))
 	return []byte(strings.Replace(string(page), "</head>", meta+"</head>", 1))
 }
